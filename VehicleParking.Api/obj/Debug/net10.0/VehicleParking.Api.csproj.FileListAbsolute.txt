@@ -162,3 +162,4 @@ D:\VehicleParking\VehicleParking.Api\obj\Debug\net10.0\refint\VehicleParking.Api
 D:\VehicleParking\VehicleParking.Api\obj\Debug\net10.0\VehicleParking.Api.pdb
 D:\VehicleParking\VehicleParking.Api\obj\Debug\net10.0\VehicleParking.Api.genruntimeconfig.cache
 D:\VehicleParking\VehicleParking.Api\obj\Debug\net10.0\ref\VehicleParking.Api.dll
+D:\VehicleParking\VehicleParking.Api\obj\Debug\net10.0\VehicleParking.Api.sourcelink.json
