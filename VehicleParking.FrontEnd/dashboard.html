@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Vehicle Parking - Dashboard</title>
+</head>
+
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Vehicle Parking System</a>
+            <div class="d-flex">
+                <span id="welcomeUser" class="text-white me-3 align-self-center">Welcome!</span>
+                <button onclick="logout()" class="btn btn-outline-danger btn-sm">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+
+        <div id="dashAlert" class="alert d-none" role="alert"></div>
+
+        <div id="adminSection" class="card shadow mb-4 d-none border-0">
+            <div class="card-header bg-dark text-white py-3">
+                <h5 class="mb-0"> Admin Panel: Create New User</h5>
+            </div>
+            <div class="card-body p-4 bg-white">
+                <div id="createUserAlert" class="alert d-none" role="alert"></div>
+
+                <form id="createUserForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary">Full Name</label>
+                            <input type="text" class="form-control" id="newFullName" placeholder="e.g. Ali Khan"
+                                required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary">Email Address</label>
+                            <input type="email" class="form-control" id="newEmail" placeholder="e.g. ali@gmail.com"
+                                required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary">Password</label>
+                            <input type="password" class="form-control" id="newPassword" placeholder="Enter Password"
+                                required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary">Assign Role</label>
+                            <select class="form-control" id="newRole">
+                                <option value="User">User</option>
+                                <option value="Admin">Admin</option>
+                            </select>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-success w-100 py-2 fw-bold shadow-sm">
+                                Create User Account
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <h2 class="mb-4">Parking Slots Status</h2>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <div class="alert alert-info">Available Car Spaces: <span id="carSpaceCount">0</span></div>
+            </div>
+            <div class="col-md-4">
+                <div class="alert alert-secondary">Available Bike Spaces: <span id="bikeSpaceCount">0</span></div>
+            </div>
+            <div class="col-md-4">
+                <div class="alert alert-warning">Available Truck Spaces: <span id="truckSpaceCount">0</span></div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card text-white bg-success shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Total Calculation (Revenue)</h5>
+                    <h3 id="totalRevenueDisplay">Rs. 0</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle text-center">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Slot Number</th>
+                                <th>Slot Type</th>
+                                <th>Status</th>
+                                <th>Vehicle Number</th>
+                                <th>Ticket Number</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="slotsTableBody">
+                            <!-- Slots dynamically load  -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-4 mb-4 shadow">
+            <h4>Park a Vehicle</h4>
+            <div class="mb-3">
+                <label class="form-label">Slot Type:</label>
+                <select id="selectVehicleType" class="form-control" onchange="loadAvailableSlotDropdown()">
+                    <option value="">Select Type</option>
+                    <option value="Car">Car (Fee: 100 Rs)</option>
+                    <option value="Bike">Bike (Fee: 50 Rs)</option>
+                    <option value="Truck">Truck (Fee: 200 Rs)</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="selectSlotId" class="form-label">Select Available Slot Number:</label>
+                <select id="selectSlotId" class="form-control">
+                    <option value=""> Select Slot Type First </option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="inputVehicleNumber" class="form-label">Vehicle Number:</label>
+                <input type="text" id="inputVehicleNumber" class="form-control" placeholder="e.g., LEA-1234">
+            </div>
+
+            <button class="btn btn-success" onclick="bookFromForm()">Book Slot</button>
+        </div>
+    </div>
+    <!-- Payment Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="paymentModalLabel">Parking Payment & Release</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Vehicle Type:</label>
+                        <h5 id="payVehicleType" class="fw-bold">--</h5>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Total Parking Fee:</label>
+                        <h4 class="text-success fw-bold">Rs. <span id="payAmount">100</span></h4>
+                    </div>
+                    <div class="mb-3">
+                        <label for="paymentMethodSelect" class="form-label fw-bold">Select Payment Method:</label>
+                        <select id="paymentMethodSelect" class="form-select">
+                            <option value="Cash">Cash</option>
+                            <option value="Card">Credit / Debit Card</option>
+                            <option value="JazzCash">JazzCash / EasyPaisa</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="confirmPaymentAndRelease()">Confirm & Release
+                        Slot</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+
+</html>

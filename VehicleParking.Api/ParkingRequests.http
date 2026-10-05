@@ -1,0 +1,32 @@
+@HostAddress = https://locahost:7000
+# (Apne project ka port number check kar lein, aam tor par 5001 ya 7xxx hota hai jo run hone par upar aata hai)
+
+### 1. Register New User
+POST http://localhost:5164/api/Auth/register
+Content-Type: application/json
+
+{
+  "fullName": "Muhammad Saad",
+  "email": "saad@gmail.com",
+  "passwordHash": "123456",
+  "role": "User"
+}
+
+### 2. Login User (Yeh request chalane ke baad Response se Token copy karna hai)
+# @name loginRequest
+POST http://localhost:5164/api/Auth/login
+Content-Type: application/json
+
+{
+  "email": "saad@gmail.com",
+  "password": "123456"
+}
+
+### 3. Get All Parking Slots (Protected API - Token Required)
+# Login ke baad jo token mile ga, use neechay 'Bearer' ke baad paste karna hai
+GET https://localhost:5164/api/Parking/slots
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIxIiwiZW1haWwiOiJzYWFkQGdtYWlsLmNvbSIsInJvbGUiOiJVc2VyIiwibmJmIjoxNzkwNTgyNDUxLCJleHAiOjE3OTA1OTMyNTEsImlhdCI6MTc5MDU4MjQ1MSwiaXNzIjoiVmVoaWNsZVBhcmtpbmdBcHAiLCJhdWQiOiJWZWhpY2xlUGFya2luZ1VzZXJzIn0.649Lvzt-WMJ3G2lssUdI3bzoxJeZWF0XsWbO4JpHWKc
+
+### 4. Get Available Parking Slots Only ('Yes' wale slots)
+GET https://localhost:5164/api/Parking/available
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIxIiwiZW1haWwiOiJzYWFkQGdtYWlsLmNvbSIsInJvbGUiOiJVc2VyIiwibmJmIjoxNzkwNTgyMjY1LCJleHAiOjE3OTA1OTMwNjUsImlhdCI6MTc5MDU4MjI2NSwiaXNzIjoiVmVoaWNsZVBhcmtpbmdBcHAiLCJhdWQiOiJWZWhpY2xlUGFya2luZ1VzZXJzIn0.w6wGE822hKkLn5QmU9zOjEPUH7Vy6mTnkbkmtlTPGLQ
