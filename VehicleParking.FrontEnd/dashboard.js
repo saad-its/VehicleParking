@@ -98,10 +98,8 @@ async function loadStatsAndSlots() {
     if (res.ok) {
       const stats = await res.json();
       document.getElementById("carSpaceCount").textContent = stats.carAvailable;
-      document.getElementById("bikeSpaceCount").textContent =
-        stats.bikeAvailable;
-      document.getElementById("truckSpaceCount").textContent =
-        stats.truckAvailable;
+      document.getElementById("bikeSpaceCount").textContent = stats.bikeAvailable;
+      document.getElementById("truckSpaceCount").textContent = stats.truckAvailable;
     }
   } catch (err) {
     console.error("Error loading stats", err);
@@ -203,8 +201,7 @@ async function bookFromForm() {
       );
       document.getElementById("inputVehicleNumber").value = "";
       loadStatsAndSlots();
-      document.getElementById("selectSlotId").innerHTML =
-        '<option value="">-- Select Slot Type First --</option>';
+      document.getElementById("selectSlotId").innerHTML = '<option value="">-- Select Slot Type First --</option>';
       document.getElementById("selectVehicleType").value = "";
     } else {
       alert(data.message || "Booking failed");
@@ -224,14 +221,14 @@ function openPaymentModal(slotId, vehicleType, bookingTime) {
     currentSlotIdForPayment = slotId;
     document.getElementById('payVehicleType').innerText = vehicleType || 'Car';
 
-    // 1. Hourly rate set 
+    //  Hourly rate set 
     let hourlyRate = 50;
     if (vehicleType && vehicleType.toLowerCase() === "car") {
         hourlyRate = 100;
     } else if (vehicleType && vehicleType.toLowerCase() === "truck") {
         hourlyRate = 200;
     }
-    // 2. Hours calculate 
+    // Hours calculate 
     let totalHours = 1;
     if (bookingTime && bookingTime !== "null" && bookingTime !== "undefined") {
         const checkIn = new Date(bookingTime);
@@ -246,15 +243,14 @@ function openPaymentModal(slotId, vehicleType, bookingTime) {
     totalHoursGlobal = totalHours;
     calculatedFeeGlobal = totalHours * hourlyRate;
 
-    // 3. Modal ke andar fee show karna
+    // Modal ke andar fee show karna
     document.getElementById('payAmount').innerText = calculatedFeeGlobal;
 
-    // 4. Modal open karna
+    // Modal open karna
     var paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
     paymentModal.show();
 }
-
-// Jab user payment select kar ke 'Confirm & Release' dabaye
+//When the user select the payment and click the confirm or release button so
 async function confirmPaymentAndRelease() {
     let selectedMethod = document.getElementById('paymentMethodSelect').value;
 

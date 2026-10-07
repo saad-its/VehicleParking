@@ -11,8 +11,6 @@ namespace VehicleParking.Api.Controllers
     public class ParkingController : ControllerBase
     {
         private readonly IParkingService _parkingService;
-
-        // Dependency Injection (DIP Principle)
         public ParkingController(IParkingService parkingService)
         {
             _parkingService = parkingService;

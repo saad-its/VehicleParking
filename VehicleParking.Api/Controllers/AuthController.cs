@@ -25,7 +25,6 @@ namespace VehicleParking.Api.Controllers
             _configuration = configuration;
         }
 
-        // 1. Admin-Only User Creation Endpoint (POST: api/auth/create-user)
         [HttpPost("create-user")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateUser([FromBody] User model)
@@ -37,13 +36,11 @@ namespace VehicleParking.Api.Controllers
                 return BadRequest(new { message = "Email is already registered!" });
             }
 
-            // Password Hashing
             var passwordHasher = new PasswordHasher<User>();
             model.Password = passwordHasher.HashPassword(model, model.Password);
 
             model.CreatedAt = DateTime.Now;
 
-            // If role does not define, so "User" by default selected
             if (string.IsNullOrEmpty(model.Role))
             {
                 model.Role = "User";
@@ -55,7 +52,6 @@ namespace VehicleParking.Api.Controllers
             return Ok(new { message = "User account created successfully by Admin with secure password!" });
         }
 
-        // 2. Login Endpoint (POST: api/auth/login)
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserLoginDto model)
         {
@@ -70,7 +66,6 @@ namespace VehicleParking.Api.Controllers
 
             try
             {
-                // 1. Try secure hash verification
                 var verificationResult = passwordHasher.VerifyHashedPassword(user, user.Password, model.Password);
                 if (verificationResult == PasswordVerificationResult.Success)
                 {
@@ -79,7 +74,6 @@ namespace VehicleParking.Api.Controllers
             }
             catch (FormatException)
             {
-                // 2. Fallback: Agar database mein purana plain text password parha ho
                 if (user.Password == model.Password)
                 {
                     isPasswordValid = true;
@@ -101,10 +95,10 @@ namespace VehicleParking.Api.Controllers
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role)
-        }),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Role, user.Role)
+                }),
                 Expires = DateTime.UtcNow.AddHours(3),
                 Issuer = _configuration["Jwt:Issuer"],
                 Audience = _configuration["Jwt:Audience"],

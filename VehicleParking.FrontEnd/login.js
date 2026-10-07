@@ -18,14 +18,12 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         const data = await response.json();
 
         if (response.ok) {
-            //Check the user to alocate the actual role or not
             if (data.user.role.toLowerCase() !== selectedRole.toLowerCase()) {
                 alertBox.classList.remove('d-none');
                 alertBox.className = "alert alert-danger";
                 alertBox.textContent = `Access denied! This account is not registered as an ${selectedRole}.`;
                 return;
             }
-            //Token and User details saved the localstorage
             localStorage.setItem('jwtToken', data.token);
             localStorage.setItem('userName', data.user.fullName);
             localStorage.setItem('userRole', data.user.role);

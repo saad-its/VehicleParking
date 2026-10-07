@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Database Connection register 
 builder.Services.AddDbContext<AppDbContext>(options => 
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -19,7 +18,6 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
 
-// 2. JWT Key Authentication configure
 var jwtKey = builder.Configuration["Jwt:Key"];
 var keyBytes = Encoding.UTF8.GetBytes(jwtKey!);
 
@@ -43,7 +41,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddScoped<IParkingService, ParkingService>();
-// 3. CORS Policy
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -56,7 +54,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// 4. DATABASE SEEDING: Default Admin Account Automatically Create Karne ke Liye
+// DATABASE SEEDING: Default Admin Account Automatically Create Karne ke Liye
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -77,7 +75,6 @@ using (var scope = app.Services.CreateScope())
             CreatedAt = DateTime.Now
         };
 
-        // Hash password correctly
         defaultAdmin.Password = passwordHasher.HashPassword(defaultAdmin, "admin123");
 
         context.Users.Add(defaultAdmin);
@@ -85,7 +82,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// 5. Middleware Pipeline
+
 app.UseHttpsRedirection();  // http://..... => https://...
 
 app.UseCors("AllowAll");
