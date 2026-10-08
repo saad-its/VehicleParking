@@ -7,7 +7,7 @@ namespace VehicleParking.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize] 
+    [Authorize]
     public class ParkingController : ControllerBase
     {
         private readonly IParkingService _parkingService;
@@ -28,29 +28,16 @@ namespace VehicleParking.Api.Controllers
         [HttpPost("book")]
         public async Task<IActionResult> BookSlot([FromBody] BookSlotDto dto)
         {
-            try
-            {
-                var result = await _parkingService.BookSlotAsync(dto);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            var result = await _parkingService.BookSlotAsync(dto);
+            return Ok(result);
         }
 
         [HttpPost("release/{slotId}")]
         public async Task<IActionResult> ReleaseSlot(int slotId)
         {
-            try
-            {
-                var result = await _parkingService.ReleaseSlotAsync(slotId);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            var result = await _parkingService.ReleaseSlotAsync(slotId);
+            return Ok(result);
+
         }
 
         [HttpGet("revenue")]

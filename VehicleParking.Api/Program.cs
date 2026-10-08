@@ -82,6 +82,24 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+
+        var exceptionHandlerPathFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerPathFeature>();
+        var exception = exceptionHandlerPathFeature?.Error;
+
+        var errorResponse = new
+        {
+            success = false,
+            message = exception?.Message ?? "An unexpected server error occurred."
+        };
+        await context.Response.WriteAsJsonAsync(errorResponse);
+    });
+});
 
 app.UseHttpsRedirection();  // http://..... => https://...
 

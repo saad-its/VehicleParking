@@ -35,47 +35,56 @@ namespace VehicleParking.Api.Services
 
         public async Task<object> BookSlotAsync(BookSlotDto dto)
         {
-            var slot = await _context.ParkingSlots.FindAsync(dto.SlotId);
-            if (slot == null || !slot.IsAvailable)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                throw new Exception("Slot is already booked or does not exist.");
+                var slot = await _context.ParkingSlots.FindAsync(dto.SlotId);
+                if (slot == null || !slot.IsAvailable)
+                {
+                    throw new Exception("Slot is already booked or does not exist.");
+                }
+
+                slot.IsAvailable = false;
+                slot.CurrentVehicleNumber = dto.VehicleNumber;
+
+                string ticketNumber = "TKT-" + Guid.NewGuid().ToString().Substring(0, 6).ToUpper();
+                slot.TicketNumber = ticketNumber;
+
+                decimal fee = slot.VehicleType switch
+                {
+                    VehicleType.Car => 100,
+                    VehicleType.Bike => 50,
+                    VehicleType.Truck => 200,
+                    _ => 50
+                };
+
+                var parkingLog = new ParkingLog
+                {
+                    UserId = dto.UserId,
+                    SlotId = dto.SlotId,
+                    VehicleNumber = dto.VehicleNumber,
+                    CheckInTime = DateTime.Now,
+                    Status = "Active",
+                    TicketNumber = ticketNumber,
+                    Fee = fee
+                };
+
+                _context.ParkingLogs.Add(parkingLog);
+                await _context.SaveChangesAsync();
+
+                return new
+                {
+                    message = "Slot successfully booked!",
+                    logId = parkingLog.Id,
+                    ticketNumber = ticketNumber,
+                    fee = fee
+                };
             }
-
-            slot.IsAvailable = false;
-            slot.CurrentVehicleNumber = dto.VehicleNumber;
-
-            string ticketNumber = "TKT-" + Guid.NewGuid().ToString().Substring(0, 6).ToUpper();
-            slot.TicketNumber = ticketNumber;
-
-            decimal fee = slot.VehicleType switch
+            catch (Exception)
             {
-                VehicleType.Car => 100,
-                VehicleType.Bike => 50,
-                VehicleType.Truck => 200,
-                _ => 50
-            };
-
-            var parkingLog = new ParkingLog
-            {
-                UserId = dto.UserId,
-                SlotId = dto.SlotId,
-                VehicleNumber = dto.VehicleNumber,
-                CheckInTime = DateTime.Now,
-                Status = "Active",
-                TicketNumber = ticketNumber,
-                Fee = fee
-            };
-
-            _context.ParkingLogs.Add(parkingLog);
-            await _context.SaveChangesAsync();
-
-            return new
-            {
-                message = "Slot successfully booked!",
-                logId = parkingLog.Id,
-                ticketNumber = ticketNumber,
-                fee = fee
-            };
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<object> ReleaseSlotAsync(int slotId)
