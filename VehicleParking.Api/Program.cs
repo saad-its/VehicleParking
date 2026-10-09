@@ -54,7 +54,6 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// DATABASE SEEDING: Default Admin Account Automatically Create Karne ke Liye
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -101,7 +100,7 @@ app.UseExceptionHandler(errorApp =>
     });
 });
 
-app.UseHttpsRedirection();  // http://..... => https://...
+app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 
