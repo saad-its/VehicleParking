@@ -57,7 +57,6 @@ async function loadParkingSlots() {
         let tNum = slot.ticketNumber || "TKT-" + slot.id;
         let bTime = slot.bookingTime || slot.checkInTime || slot.createdAt || "";
 
-        // Agar vehicle booked hai toh Release aur Print button dikhao, warna '--'
 let actionBtn = hasVehicle
     ? `<button class="btn btn-warning btn-sm me-1" onclick="openPaymentModal(${slot.id}, '${slot.vehicleType}', '${slot.bookingTime}')">Release</button>
        <button class="btn btn-secondary btn-sm" onclick="printTicket('${slot.slotNumber}', '${slot.ticketNumber}', '${slot.vehicleType}', '${slot.currentVehicleNumber}', '${slot.bookingTime}')">Print</button>`
@@ -216,7 +215,6 @@ let currentSlotIdForPayment = null;
 let calculatedFeeGlobal = 0;
 let totalHoursGlobal = 1;
 
-// Jab user 'Release' dabaye toh hours calculate ho kar modal khule
 function openPaymentModal(slotId, vehicleType, bookingTime) {
     currentSlotIdForPayment = slotId;
     document.getElementById('payVehicleType').innerText = vehicleType || 'Car';
@@ -243,7 +241,6 @@ function openPaymentModal(slotId, vehicleType, bookingTime) {
     totalHoursGlobal = totalHours;
     calculatedFeeGlobal = totalHours * hourlyRate;
 
-    // Modal ke andar fee show karna
     document.getElementById('payAmount').innerText = calculatedFeeGlobal;
 
     // Modal open karna

@@ -49,6 +49,7 @@ namespace VehicleParking.Api.Services
 
                 string ticketNumber = "TKT-" + Guid.NewGuid().ToString().Substring(0, 6).ToUpper();
                 slot.TicketNumber = ticketNumber;
+                slot.BookingTime = DateTime.Now;
 
                 decimal fee = slot.VehicleType switch
                 {
@@ -71,12 +72,14 @@ namespace VehicleParking.Api.Services
 
                 _context.ParkingLogs.Add(parkingLog);
                 await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
 
                 return new
                 {
                     message = "Slot successfully booked!",
                     logId = parkingLog.Id,
                     ticketNumber = ticketNumber,
+                    checkInTime = parkingLog.CheckInTime,
                     fee = fee
                 };
             }
